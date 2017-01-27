@@ -84,6 +84,18 @@ class Movie:
         num_ratings = title.find("div","imdbRating").a.get_text()
         release_year = title.find("div","title_wrapper").a.get_text()
         run_time = title.find("time").get_text()
+        movie_title = title.find("h1")
+    	movie_span = movie_title.span.decompose()
+    	movie_title = movie_title.get_text()
+
+    	find_bottom_pg_data = soup.findAll("h4","inline")
+        for data in find_bottom_pg_data:
+            if data.get_text() == "Production Co:":
+                production_co = data.find_next_sibling().get_text()
+            if data.get_text() == "Budget:":
+                budget = data.nextSibling
+            if data.get_text() == "Gross:":
+                gross = data.nextSibling
         
         # Get full cast and crew by scraping the IMDB movie credits page:
         imdb_credits_url = "http://www.imdb.com"+url_key+"fullcredits?ref_=tt_cl_sm#cast"
@@ -127,6 +139,10 @@ class Movie:
         self.run_time = run_time
         self.full_credits = full_credits
         self.credits_by_teams = credits_by_teams
+        self.movie_title = movie_title
+        self.budget = budget
+        self.gross = gross
+        self.production_co = production_co
 
     def get_team_members(self, teamname):
         """
