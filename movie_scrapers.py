@@ -1,3 +1,7 @@
+import bs4
+import requests
+import nltk
+
 def scrape_movie_lists(url):
     """
     Scrapes a wikipedia url and returns the
@@ -34,13 +38,12 @@ def scrape_movie_lists(url):
     
     return list_of_movies
 
-
 def get_imdb_links(title):
     """
     Scrapes IMDB site and returns the IMDB main url
     for movie of interest. 
     """
-    
+     
     # Convert input title into an IMDB search:
     tokenized_title = ""
     for token in nltk.word_tokenize(title):
@@ -80,55 +83,30 @@ class Movie:
         find_bottom_pg_data = soup.findAll("h4", "inline")
         for data in find_bottom_pg_data:
             if data.get_text() == "Production Co:":
-                production_co = data.find_next_sibling().get_text()
-            if data.get_text() == "Budget:":
-                budget = data.nextSibling
-            if data.get_text() == "Gross:":
-                gross = data.nextSibling
-            else:  
-                production_co = None
-                budget = None
-                gross = None
-
-        self.budget = budget
-        self.gross = gross
-        self.production_co = production_co
+                self.production_co = data.find_next_sibling().get_text()
+            elif data.get_text() == "Budget:":
+                self.budget = data.nextSibling
+            elif data.get_text() == "Gross:":
+                self.gross = data.nextSibling
 
         title = soup.findAll("div", "title_block")[0]
 
         rating_tag = title.find("strong")
-        rating = rating_tag.get_text() if rating_tag else None
+        if rating_tag:
+            self.rating = rating_tag.get_text()
         num_ratings_tag = title.find("div", "imdbRating").a
-        num_ratings = num_ratings_tag.get_text() if num_ratings_tag else None
+        if num_ratings_tag:
+        	self.num_ratings = num_ratings_tag.get_text()
         release_year_tag = title.find("div", "title_wrapper").a
-        release_year = release_year_tag.get_text() if release_year_tag else None
+        if release_year_tag:
+            self.release_year = release_year_tag.get_text()    
         run_time_tag = title.find("time")
-        run_time = run_time_tag.get_text() if run_time_tag else None                
+        if run_time_tag:
+            self.run_time = run_time_tag.get_text()
 
-        self.budget = budget
-        self.gross = gross
-        self.production_co = production_co
-
-        title = soup.findAll("div", "title_block")[0]
-
-        rating_tag = title.find("strong")
-        rating = rating_tag.get_text() if rating_tag else None
-        # rating = title.find("strong").get_text()
-        
-        num_ratings_tag = title.find("div", "imdbRating")
-        num_ratins = num_ratings_tag.a.get_text() if num_ratings_tag else None
-        num_ratings = title.find("div", "imdbRating").a.get_text()
-        release_year = title.find("div", "title_wrapper").a.get_text()
-        run_time = title.find("time").get_text()
         movie_title = title.find("h1")
         movie_span = movie_title.span.decompose()
-        movie_title = movie_title.get_text()
-
-        self.rating = rating
-        self.num_ratings = num_ratings
-        self.release_year = release_year
-        self.run_time = run_time
-        self.movie_title = movie_title
+        self.movie_title = movie_title.get_text()
 
     def set_credits_info(self, url):
         """Get full cast and crew by scraping IMDB credits page."""
@@ -138,10 +116,10 @@ class Movie:
         credits_data = credits_soup.findAll("div", "header")[0]
         
         # Store movie credits in a list of tuples of the form (name,role):
-        full_credits = []
+        self.full_credits = []
 
         # Store movie credits in a list of tuples of the form (name, team):
-        credits_by_teams = []
+        self.credits_by_teams = []
         teamnames = []
 
         find_teamnames = credits_data.findAll("h4", "dataHeaderWithBorder")
@@ -163,20 +141,28 @@ class Movie:
                 if row.findAll("td", "credit"):
                     role = row.findAll("td", "credit", limit=1)[0].get_text()
         
-                    full_credits.append((name,role))
-                    credits_by_teams.append((name, teamnames[idx]))
-                  
-        
-        self.full_credits = full_credits
-        self.credits_by_teams = credits_by_teams
-
+                    self.full_credits.append((name,role))
+                    self.credits_by_teams.append((name, teamnames[idx]))
+                      
     def __init__(self, url_key):
         
+        self.budget = None
+        self.gross = None
+        self.production_co = None
+        self.rating = None
+        self.num_ratings = None
+        self.release_year = None
+        self.run_time = None
+        self.movie_title = None  
+
         imdb_url = "http://www.imdb.com"+url_key
-        self.set_movie_metrics(imdb_url)       
-        
+        self.set_movie_metrics(imdb_url)
+
+        self.full_credits = None
+        self.credits_by_teams = None
+
         imdb_credits_url = "http://www.imdb.com"+url_key+"fullcredits?ref_=tt_cl_sm#cast"
-        self.set_credits_info(imdb_credits_url)       
+        self.set_credits_info(imdb_credits_url)
 
     def get_team_members(self, teamname):
         """
