@@ -1,40 +1,44 @@
 import bs4
-import requests
 import nltk
+import requests
+import sys
+import time
+
 
 def scrape_movie_lists(url):
     """
-    Scrapes wikipedia page showing animated movie 
-    lists by year. Takes a url (string) as input, 
+    Scrapes wikipedia page showing animated movie
+    lists by year. Takes a url (string) as input,
     and returns a list of movie titles.
     """
-    
+
     # Get web page
     response = requests.get(url)
 
     # Create soup object from page content
     soup = bs4.BeautifulSoup(response.text, "html.parser")
     main_table = soup.findAll('table', 'wikitable', limit=1)[0]
-    
+
     # Get table rows
     table_rows = main_table.findAll("tr")
 
     list_of_movies = []
-    
+
     # Get movie titles
-    for row in table_rows:        
+    for row in table_rows:
         cols = row.findAll('td', limit=1)
-        
+
         for td in cols:
-            
+
             # Filter by i tag since "small" tag is foreign movie title
             a_tag = td.i.a
             if type(a_tag) == bs4.element.Tag:
-                list_of_movies.append(a_tag.get_text())  
-            else: 
+                list_of_movies.append(a_tag.get_text())
+            else:
                 pass
-    
+
     return list_of_movies
+
 
 def get_imdb_links(title):
     """
@@ -46,47 +50,50 @@ def get_imdb_links(title):
     # Convert input title into an IMDB search:
     tokenized_title = ""
     for token in nltk.word_tokenize(title):
-        tokenized_title += token+"%20"
-    imdb_search = "http://www.imdb.com/find?q="+tokenized_title+"&s=tt&ttype=ft&ref_=fn_ft"
-    
+        tokenized_title += token + "%20"
+    imdb_search = "http://www.imdb.com/find?q=" + \
+        tokenized_title + "&s=tt&ttype=ft&ref_=fn_ft"
+
     # Get web page, and create Soup object:
     response = requests.get(imdb_search)
     soup = bs4.BeautifulSoup(response.text, "html.parser")
 
     # Return None if there are 0 search results for the movie:
-    if len(soup.findAll('table', "findList", limit=1))==0:
+    if len(soup.findAll('table', "findList", limit=1)) == 0:
         return None
-    
+
     # Save URL w/movie key by finding the first result in the table:
     else:
         main_table = soup.findAll('table', "findList", limit=1)[0]
         table_rows = main_table.findAll("tr", limit=1)
-  
-        for row in table_rows:        
+
+        for row in table_rows:
             cols = row.findAll('td', "result_text", limit=1)
-      
+
             for td in cols:
                 movie_key = td.a.get('href')[0:17]
-       
+
     return movie_key
+
 
 def persistent_get(url):
     """Takes a url as input and continues to fetch the url
-	if a ConnectionError is received"""
+        if a ConnectionError is received"""
 
-    for try_num in range(0, 100):
+    for try_num in range(0, 100): # pylint: disable=unused-variable
         try:
-        	return requests.get(url)
-        except ConnectionError:
-        	time.sleep(0.5)
+            return requests.get(url)
+        except requests.ConnectionError:
+            time.sleep(0.5)
     sys.stderr.write("WARNING: failed to fetch {}.\n".format(url))
     return None
+
 
 class Movie:
     """Collection of information about a single movie."""
 
     def __init__(self, url_key):
-        
+
         self.movie_title = None
         self.budget = None
         self.gross = None
@@ -96,13 +103,14 @@ class Movie:
         self.release_year = None
         self.run_time = None
 
-        imdb_url = "http://www.imdb.com"+url_key
+        imdb_url = "http://www.imdb.com" + url_key
         self.set_movie_metrics(imdb_url)
 
         self.full_credits = None
         self.credits_by_teams = None
 
-        imdb_credits_url = "http://www.imdb.com"+url_key+"fullcredits?ref_=tt_cl_sm#cast"
+        imdb_credits_url = "http://www.imdb.com" + \
+            url_key + "fullcredits?ref_=tt_cl_sm#cast"
         self.set_credits_info(imdb_credits_url)
 
     def set_movie_metrics(self, url):
@@ -110,7 +118,7 @@ class Movie:
 
         response = persistent_get(url)
         if response is None:
-        	return
+            return
         soup = bs4.BeautifulSoup(response.text, "html.parser")
         bottom_pg_data = soup.findAll("h4", "inline")
         for data in bottom_pg_data:
@@ -131,7 +139,7 @@ class Movie:
             self.num_ratings = num_ratings_tag.a.get_text()
         release_year_tag = title.find("div", "title_wrapper")
         if release_year_tag and release_year_tag.a:
-            self.release_year = release_year_tag.a.get_text()    
+            self.release_year = release_year_tag.a.get_text()
         run_time_tag = title.find("time")
         if run_time_tag:
             self.run_time = run_time_tag.get_text()
@@ -146,10 +154,10 @@ class Movie:
 
         response_credits = persistent_get(url)
         if response_credits is None:
-        	return
+            return
         credits_soup = bs4.BeautifulSoup(response_credits.text, "html.parser")
         credits_data = credits_soup.findAll("div", "header")[0]
-        
+
         # Store movie credits in a list of tuples of the form (name,role):
         self.full_credits = []
 
@@ -160,23 +168,23 @@ class Movie:
         teamnames_list = credits_data.findAll("h4", "dataHeaderWithBorder")
         for teamname in teamnames_list:
             teamnames.append(teamname.get_text())
-        
+
         team_tables = credits_data.findAll("table")
-    
-        for idx,table in enumerate(team_tables):
+
+        for idx, table in enumerate(team_tables):
             crew_byrow = table.findAll("tr")
-        
+
             for row in crew_byrow:
                 tds = row.findAll('td')
-        
+
                 for td in tds:
                     if td.a:
                         name = td.a.get_text()
-                
+
                 if row.findAll("td", "credit"):
                     role = row.findAll("td", "credit", limit=1)[0].get_text()
-        
-                    self.full_credits.append((name,role))
+
+                    self.full_credits.append((name, role))
                     self.credits_by_teams.append((name, teamnames[idx]))
 
     def get_team_members(self, teamname):
