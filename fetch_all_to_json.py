@@ -1,10 +1,5 @@
 import json
-#import argparse
 import csv
-#import operator
-#import codecs
-#import cStringIO
-#import urllib2
 import sys
 import movie_scrapers
 
