@@ -40,19 +40,19 @@ def scrape_movie_lists(url):
     return list_of_movies
 
 
-def get_imdb_links(title):
+def get_imdb_links(title, year):
     """
     Scrapes IMDB site and returns the unique IMDB url key
-    for movie of interest. Takes the movie title (string)
-    as input, and returns a url key.
+    for movie of interest. Takes the movie title (unicode)
+    and release year (unicode) as input, and returns a url key.
     """
 
     # Convert input title into an IMDB search:
     tokenized_title = ""
     for token in nltk.word_tokenize(title):
-        tokenized_title += token + "%20"
-    imdb_search = "http://www.imdb.com/find?q=" + \
-        tokenized_title + "&s=tt&ttype=ft&ref_=fn_ft"
+        tokenized_title += token + "+"
+    imdb_search = "http://www.imdb.com/find?ref_=nv_sr_fn&q=" + \
+        tokenized_title + "&s=tt"
 
     # Get web page, and create Soup object:
     response = requests.get(imdb_search)
@@ -62,7 +62,7 @@ def get_imdb_links(title):
     if len(soup.findAll('table', "findList", limit=1)) == 0:
         return None
 
-    # Save URL w/movie key by finding the first result in the table:
+    # Save URL w/movie key by finding the matching title and year:
     else:
         main_table = soup.findAll('table', "findList", limit=1)[0]
         table_rows = main_table.findAll("tr", limit=1)
@@ -71,8 +71,16 @@ def get_imdb_links(title):
             cols = row.findAll('td', "result_text", limit=1)
 
             for td in cols:
-                movie_key = td.a.get('href')[0:17]
-
+                store_movie_key = td.a.get('href')[0:17]
+                movie_name = td.a.get_text()                
+                strip_title = td.a.decompose()
+                search_result_year = td.get_text()[3:7]
+                
+                if movie_name == title and search_result_year == year:
+                    movie_key = store_movie_key
+                else:
+                    return None
+                                
     return movie_key
 
 
