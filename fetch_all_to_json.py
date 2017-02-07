@@ -26,5 +26,5 @@ print len(movie_dicts)
 
 # Write list of movie dictionaries to a json file:
 
-with open('movies_testrun.json','wb') as outfile:
+with open('movies_6feb2017.json','wb') as outfile:
     json.dump(movie_dicts, outfile, indent = 2, separators = (',',': '))

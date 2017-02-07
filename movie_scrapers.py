@@ -65,7 +65,7 @@ def get_imdb_links(title, year):
     # Save URL w/movie key by finding the matching title and year:
     else:
         main_table = soup.findAll('table', "findList", limit=1)[0]
-        table_rows = main_table.findAll("tr", limit=1)
+        table_rows = main_table.findAll("tr")
 
         for row in table_rows:
             cols = row.findAll('td', "result_text", limit=1)
@@ -77,11 +77,12 @@ def get_imdb_links(title, year):
                 search_result_year = td.get_text()[3:7]
                 
                 if movie_name == title and search_result_year == year:
-                    movie_key = store_movie_key
-                else:
-                    return None
+                    return store_movie_key
+                #     movie_key = store_movie_key
+                # else:
+                #     return None
                                 
-    return movie_key
+    return None
 
 
 def persistent_get(url):

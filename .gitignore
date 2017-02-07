@@ -1,3 +1,5 @@
 .ipynb_checkpoints/
 *.pyc
 movies.json
+imdb_url_oldlist.csv
+movies_6feb2017.json

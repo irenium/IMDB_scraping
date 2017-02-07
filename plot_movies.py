@@ -48,6 +48,8 @@ def process_data():
     studio_array = np.full(shape = (num_rows, num_cols), fill_value=None, dtype = object)
     title_array = np.full(shape = (num_rows, num_cols), fill_value=None, dtype = object)
     num_ratings_array = np.full(shape = (num_rows, num_cols), fill_value=None, dtype = float)
+    ratings_array = np.full(shape = (num_rows, num_cols), fill_value=None, dtype = float)
+    allcrew_array = np.full(shape = (num_rows, num_cols), fill_value=None, dtype = float)
 
     # Fill in the empty arrays with data:
     year_list = sorted(movies_by_year.keys())
@@ -58,8 +60,15 @@ def process_data():
             if movie["num_ratings"]:
                 movie["num_ratings"] = int(movie["num_ratings"].replace(',',''))
             elif movie["num_ratings"] is None:
-                movie["num_ratings"]=0
+                movie["num_ratings"] = 0
+            if movie["rating"]:
+                movie["rating"] = float(movie["rating"])
+            elif movie["rating"] is None:
+                movie["rating"] = 0
+            ratings_array[row, col] = movie["rating"]
+
             credits_by_teams = movie["credits_by_teams"]
+            allcrew_array[row, col] = len(movie["full_credits"])
             visual_fx_array[row, col] = len(get_team_members(credits_by_teams, 
                                             "Visual Effects by"))
             animators_array[row, col] = len(get_team_members(credits_by_teams, 
@@ -98,6 +107,8 @@ def process_data():
 
     return (pd.DataFrame(data = animators_array, columns = year_list),
             pd.DataFrame(data = visual_fx_array, columns = year_list),
+    #return (pd.DataFrame(data = ratings_array, columns = year_list),
+    #        pd.DataFrame(data = allcrew_array, columns = year_list),
             pd.DataFrame(data = num_ratings_array, columns = year_list),
             pd.DataFrame(data = studio_array, columns = year_list),
             pd.DataFrame(data = title_array, columns = year_list),
