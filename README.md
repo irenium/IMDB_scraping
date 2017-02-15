@@ -1,6 +1,6 @@
 # Scraping IMDb to investigate resource allocation in animated movies
 
-Animated movies often have impressive stories with witty dialogue. In fact, I would guess that production companies invest more in having a quality writing team for an animated movie versus a non-animated movie, where a great cast can steal the show and make up for a dumb story. But not all animated movies are created equal. Some animated movies have dialogue that falls flat, but make up for it with impressive animation. To investigate the impact of crew size (including writing team, animation team, visual effects team, etc) on movie success, I scraped data for ~2000 animated movies from IMDb.
+The blog post for this project can be found here: https://irenium.github.io/imdb/
 
 ### Details:
 
