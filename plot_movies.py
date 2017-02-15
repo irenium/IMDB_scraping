@@ -5,6 +5,104 @@ import pandas as pd
 from bokeh.palettes import Spectral7
 
 
+def process_data_teams():
+    """Process movie data and return organized dataframes"""
+
+    with open('movies_6feb2017.json','rb') as infile:
+        movie_dicts = json.load(infile)
+    
+    # Create a dictionary with release year as key, and
+    # mapped to a list of movies released that year:
+    movies_by_year = {}
+    for movie in movie_dicts:
+        try:
+            year = int(movie["release_year"])
+        except ValueError:
+            continue
+        if year < 1980:
+            continue
+        if year not in movies_by_year:
+            movies_by_year[year] = []
+        movies_by_year[year].append(movie)
+
+    # Find the maximum # of movies released in a given year:
+    num_rows = 0
+    for year, movie_list in movies_by_year.iteritems():
+        num_rows = max(num_rows, len(movie_list))
+    num_rows = num_rows*7
+    num_cols = len(movies_by_year)
+
+    allcrew_array = np.full(shape = (num_rows, num_cols), fill_value=None, dtype = float)
+    title_array = np.full(shape = (num_rows, num_cols), fill_value=None, dtype = object)
+    num_ratings_array = np.full(shape = (num_rows, num_cols), fill_value=None, dtype = float)
+    ratings_array = np.full(shape = (num_rows, num_cols), fill_value=None, dtype = float)
+    gross_array =  np.full(shape = (num_rows, num_cols), fill_value=None, dtype = float)
+    teams_array = np.full(shape = (num_rows, num_cols), fill_value=None, dtype = object)
+
+    # Fill in the empty arrays with data:
+    year_list = sorted(movies_by_year.keys())
+    for col, year in enumerate(year_list):
+        movie_list = movies_by_year[year]
+
+        for row, movie in enumerate(movie_list):
+            if movie["num_ratings"]:
+                movie["num_ratings"] = int(movie["num_ratings"].replace(',',''))
+            elif movie["num_ratings"] is None:
+                movie["num_ratings"] = 0
+            if movie["rating"]:
+                movie["rating"] = float(movie["rating"])
+            elif movie["rating"] is None:
+                movie["rating"] = 0
+            if movie["gross"]:
+                movie["gross"] = float(movie["gross"].strip().replace(',','').replace('$',''))
+            elif movie["gross"] is None:
+                movie["gross"] = 0
+                
+            # Scale bubble size for plotting:
+            scale_factor = 1
+            circle_size = np.sqrt(movie["gross"] / (100000 * np.pi)) / scale_factor
+            min_size = 3
+
+            for dummy_idx in range(7):
+                title_array[row*7+dummy_idx, col] = movie["title"].strip().replace('\n', ' ')             
+                num_ratings_array[row*7+dummy_idx, col] = movie["num_ratings"]              
+                ratings_array[row*7+dummy_idx, col] = movie["rating"]               
+                gross_array[row*7+dummy_idx, col] = max(circle_size, min_size)
+
+            credits_by_teams = movie["credits_by_teams"]
+            allcrew_array[row*7, col] = len(get_team_members(credits_by_teams, 
+                                            "Animation Department"))
+            teams_array[row*7, col] = Spectral7[0] 
+            allcrew_array[row*7+1, col] = len(get_team_members(credits_by_teams, 
+                                            "Visual Effects by"))
+            teams_array[row*7+1, col] = Spectral7[1] 
+            allcrew_array[row*7+2, col] = len(get_team_members(credits_by_teams, 
+                                            "Music Department"))
+            teams_array[row*7+2, col] = Spectral7[2] 
+            allcrew_array[row*7+3, col] = len(get_team_members(credits_by_teams, 
+                                            "Art Department"))
+            teams_array[row*7+3, col] = Spectral7[3] 
+            allcrew_array[row*7+4, col] = len(get_team_members(credits_by_teams, 
+                                            "Writing Credits"))
+            teams_array[row*7+4, col] = Spectral7[4] 
+            allcrew_array[row*7+5, col] = len(get_team_members(credits_by_teams, 
+                                            "Produced by")) 
+            teams_array[row*7+5, col] = Spectral7[5] 
+            allcrew_array[row*7+6, col] = len(movie["full_credits"])
+            teams_array[row*7+6, col] = Spectral7[6] 
+
+    teams = ["Animation Dept", "Visual Effects Dept", 
+                "Music Dept", "Art Dept", "Writers", 
+                "Producers", "Total Crew"]
+
+    return (pd.DataFrame(data = ratings_array, columns = year_list),
+            pd.DataFrame(data = allcrew_array, columns = year_list),
+            pd.DataFrame(data = gross_array, columns = year_list),
+            pd.DataFrame(data = teams_array, columns = year_list),
+            pd.DataFrame(data = title_array, columns = year_list),
+            year_list,
+            teams)
+
 def process_data():
     """Process movie data and return organized dataframes"""
 
@@ -12,7 +110,7 @@ def process_data():
     wiki_movie_titles  = []
     for row in csv.reader(open("movie_list.csv", "rb")):
         wiki_movie_titles.append(row[0].decode('utf-8'))
-    with open('movies.json','rb') as infile:
+    with open('movies_6feb2017.json','rb') as infile:
         movie_dicts = json.load(infile)
     valid_movie_dicts = []
     wiki_set = set(wiki_movie_titles)
@@ -107,8 +205,6 @@ def process_data():
 
     return (pd.DataFrame(data = animators_array, columns = year_list),
             pd.DataFrame(data = visual_fx_array, columns = year_list),
-    #return (pd.DataFrame(data = ratings_array, columns = year_list),
-    #        pd.DataFrame(data = allcrew_array, columns = year_list),
             pd.DataFrame(data = num_ratings_array, columns = year_list),
             pd.DataFrame(data = studio_array, columns = year_list),
             pd.DataFrame(data = title_array, columns = year_list),
