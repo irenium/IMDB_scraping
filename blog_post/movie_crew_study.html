@@ -1,0 +1,42 @@
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Resource Allocation in Animated Movies</title>
+        <link href="movie_crew_study.css" type="text/css" rel="stylesheet" />
+        <script type="text/javascript" src="https://cdn.pydata.org/bokeh/release/bokeh-0.12.2.min.js"></script>
+        <script type="text/javascript" src="https://cdn.pydata.org/bokeh/release/bokeh-widgets-0.12.2.min.js"></script>
+        <script type="text/javascript" src="https://cdn.pydata.org/bokeh/release/bokeh-compiler-0.12.2.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+        <!-- Optional theme -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+        <!-- Latest compiled and minified JavaScript -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    </head>
+    <body>
+        
+        <div>
+        <div class="bk-root">
+            <div class="plotdiv" id="473093b0-c78d-4647-8719-4957ab8ee171"></div>
+        </div>
+        </div>
+        <script type="text/javascript">
+            Bokeh.set_log_level("info");
+        </script>
+        <script type="text/javascript" src="movie_crew_study.js"></script>
+        
+        <h1> Resource Allocation in Animated Movies </h1>
+        <div><p>Animated movies often have impressive stories with witty dialogue. In fact, I would guess that production companies invest more in having a quality writing team for an animated movie versus a non-animated movie, where a great cast can steal the show and make up for a dumb story. But not all animated movies are created equal. Some animated movies have dialogue that falls flat, but make up for it with impressive animation. To investigate the impact of crew size (including writing team, animation team, visual effects team, etc) on movie success, I scraped data for ~1000 animated movies from IMDb. </p></div> 
+
+        <div>
+        <img src="rating_vs_ratio.png"/>
+        </div>
+    
+    </body>
+</html>
