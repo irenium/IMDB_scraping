@@ -1,0 +1,59 @@
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Resource Allocation in Animated Movies</title>
+        <link href="movie_crew_study.css" type="text/css" rel="stylesheet" />
+        <script type="text/javascript" src="https://cdn.pydata.org/bokeh/release/bokeh-0.12.2.min.js"></script>
+        <script type="text/javascript" src="https://cdn.pydata.org/bokeh/release/bokeh-widgets-0.12.2.min.js"></script>
+        <script type="text/javascript" src="https://cdn.pydata.org/bokeh/release/bokeh-compiler-0.12.2.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+        <!-- Optional theme -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+        <!-- Latest compiled and minified JavaScript -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    </head>
+    <body>
+        
+        <div>
+        <div class="bk-root">
+            <div class="plotdiv" id="473093b0-c78d-4647-8719-4957ab8ee171"></div>
+        </div>
+        </div>
+        <script type="text/javascript">
+            Bokeh.set_log_level("info");
+        </script>
+        <script type="text/javascript" src="movie_crew_study.js"></script>
+        
+        <h1> Resource Allocation in Animated Movies </h1>
+        <div><p>I don't know how many people out there would agree with me, but I really think that Pixar has got it all figured out. What I mean to say is that Pixar really knows how to please their audiences regardless of their age group. In fact, I sometimes don't even watch the previews for a Pixar movie, because I know that I'm already very likely to see the movie and love it. But why do I like Pixar movies so much? Is it because of the visual effects and beautiful animation? Well, a few other studios have impressive animation as well, so I don't think that's the answer. Perhaps Pixar movies are written by top notch writers: the dialogue is usually very funny and the stories can be quite creative and touching. Do you ever wonder how many people team up to write a movie script? Hayao Miyazaki has written and directed some of the most famous anime films of all time, so I wouldn't be surprised if great stories were actually written by small teams. Or maybe the number of contributing writers has nothing to do with the resulting story. Maybe the story is only impacted by who the writers are. All of these questions (and more) motivated my desire to understand how resource allocation differs among animated movies, and how the distribution of resources has changed over the past few decades. 
+        </p></div> 
+
+        <h2>Methodology</h2>
+        <div><p>To gain insights into the animated movie industry, I used the BeautifulSoup package in Python to scrape movie data off of the internet. I started by scraping wikipedia to get a list of all animated films released since 1980. I found that there has been approximately 2000 animated movies released since 1980. Using this list of movies, I scraped IMDb (the internet movie database) to get data on movie rating, year of release, film gross, production studio, details on the full cast and crew, and more. I found that IMDb only had results for about 1000 movies from my original list of 2000 movies. The following diagram illustrates the steps I took to gather my data:
+        </p></div>
+
+        <div>
+        <img src="python_files.png" style="width: 60%; height: 60%"/>
+        </div>
+
+        <h2>Key Results</h2>
+        <div><p> The interactive plot illustrates how the animated movie industry has changed since 1980. Colors represent specific teams making up the crew, such as the animation team, visual effects team, and writing team. The bubble size indicates relative movie gross. The most obvious result is that crew size and film gross both increased over the years. Movies that invested in large animation teams (and bigger crews) in the 90s tended to make more money and have higher IMDb ratings. Around year 2000, visual effects teams become popular. The movie Shrek was released in 2001, and had a visual effects team that was much larger than its animation team. One of the things that I find most interesting about the plot is the size variation in animation and visual effects teams since 2000. Some movies have more people on their animation team, and others have invested more in their visual effects team. It's difficult to discern from the plot which of these two teams is more important. Another interesting finding is that film gross and IMDb rating are only correlated with crew size up to a certain point. Take a look at year 2006: the movie Happy Feet had nearly 1000 crew members but it's IMDb rating was around 6.5. In contrast, the movie Cars (also released in 2006) had only 500 crew members but it's IMDb rating was over 7. Although the difference is only 0.5, most high-grossing animated movies score between 6 and 8 (pretty tight range).
+        </p></div>
+
+        <div><p>
+        To tease out the differences between animation versus visual effects, I took a look at the ratio of visual effects team size to animation team size. The plot focuses on Pixar/Disney and DreamWorks because these studios produced several of the highest grossing films. I was really surprised to see that DreamWorks invests much more in visual effects than in animation, and that the movies with the highest IMDb ratings had a visual effects team that was no greater than twice the size of its animation team.
+        </p></div>
+
+        <div>
+        <img src="rating_vs_ratio2.png" style="width: 80%; height: 80%"/>
+        </div>
+    
+    </body>
+</html>
