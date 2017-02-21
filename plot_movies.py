@@ -1,6 +1,7 @@
 import csv
 import jinja2
 import json
+import networkx as nx
 import numpy as np
 import pandas as pd
 
@@ -114,7 +115,7 @@ def process_data_teams():
             year_list,
             teams)
 
-def process_data():
+def process_data_studios():
     """Process movie data and return organized dataframes"""
 
     # Cross-check JSON movie titles w/CSV file scraped from wikipedia:
@@ -365,3 +366,171 @@ def write_plot_html():
     )
     with open('interactive_plot_for_web2.html', 'wb') as outfile:
         outfile.write(html)
+
+
+def format_data():
+    with open('movies_6feb2017.json','rb') as infile:
+        movie_dicts = json.load(infile)    
+        
+    title, budget, gross, studio, rating, num_ratings, release_year = [], [], [], [], [], [], []
+    visual_fx, animators, music, artists, writers, producers, directors = [],[],[],[],[],[],[]
+    num_visual_fx, num_animators, num_music, num_artists, num_writers, num_producers, num_directors, num_crew = [],[],[],[],[],[],[],[]
+    writers_score, directors_score, producers_score, binary_rating = [], [], [], []
+    writersproducers_score = []
+    allwriters_dict = {}
+    alldirectors_dict = {}
+    allproducers_dict = {}
+
+    for movie in movie_dicts:
+        if movie["title"] and int(movie["release_year"]) > 1979 and movie["rating"]:
+            title.append(movie["title"])
+            release_year.append(int(movie["release_year"]))
+               
+            if movie["production_co"]:
+                movie["production_co"] = movie["production_co"].replace('\n','')            
+                studio.append(movie["production_co"].encode('utf-8'))
+            else:
+                studio.append("None")
+
+            if movie["rating"]:                  
+                rating.append(float(movie["rating"]))
+                if float(movie["rating"]) > 7.5:
+                    binary_rating.append(1.0)
+                else:
+                    binary_rating.append(0)
+            if movie["num_ratings"]:
+                movie["num_ratings"] = int(movie["num_ratings"].replace(',',''))
+            elif movie["num_ratings"] is None:
+                movie["num_ratings"]=0
+            num_ratings.append(movie["num_ratings"])
+                               
+            if movie["gross"] is None:
+                movie["gross"] = 0
+            else:
+                movie["gross"] = movie["gross"].strip()
+                movie["gross"] = movie["gross"].replace(',','')
+                movie["gross"] = movie["gross"].replace('$','')
+            gross.append(float(movie["gross"])/1000000)
+            
+            if movie["budget"] is None:
+                budget.append(0)
+            else:
+                movie["budget"] = movie["budget"].strip()            
+                movie["budget"] = movie["budget"].replace(',','')
+                movie["budget"] = movie["budget"].replace('$','')
+                if movie['budget'][0:3]=='JPY':
+                    movie["budget"] = movie["budget"].replace('JPY','')
+                    budget.append(float(movie["budget"])*0.0088/1000000)
+                elif movie['budget'][0:3]=='DKK':
+                    movie["budget"] = movie["budget"].replace('DKK','')
+                    budget.append(float(movie["budget"])*0.14/1000000)
+                else:
+                    try:
+                        budget.append(float(movie["budget"])/1000000)
+                    except ValueError:
+                        budget.append(0)
+                    
+            credits_by_teams = movie["credits_by_teams"]
+            
+            writers.append(get_team_members(credits_by_teams, "Writing Credits"))
+            for name in get_team_members(credits_by_teams, "Writing Credits"):
+                if name not in allwriters_dict:
+                    allwriters_dict[name] = 1
+                else:
+                    allwriters_dict[name] += 1
+                    
+            for name in get_team_members(credits_by_teams, "Produced by"):
+                if name not in allproducers_dict:
+                    allproducers_dict[name] = 1
+                else:
+                    allproducers_dict[name] += 1
+                    
+            for name in get_team_members(credits_by_teams, "Directed by"):
+                if name not in alldirectors_dict:
+                    alldirectors_dict[name] = 1
+                else:
+                    alldirectors_dict[name] += 1
+                    
+            visual_fx.append(get_team_members(credits_by_teams, "Visual Effects by"))
+            animators.append(get_team_members(credits_by_teams, "Animation Department"))
+            music.append(get_team_members(credits_by_teams, "Music Department"))
+            artists.append(get_team_members(credits_by_teams, "Art Department"))
+            producers.append(get_team_members(credits_by_teams, "Produced by"))
+            directors.append(get_team_members(credits_by_teams, "Directed by"))
+            
+            num_visual_fx.append(len(get_team_members(credits_by_teams, "Visual Effects by")))
+            num_animators.append(len(get_team_members(credits_by_teams, "Animation Department")))
+            num_music.append(len(get_team_members(credits_by_teams, "Music Department")))
+            num_artists.append(len(get_team_members(credits_by_teams, "Art Department")))
+            num_writers.append(len(get_team_members(credits_by_teams, "Writing Credits")))
+            num_producers.append(len(get_team_members(credits_by_teams, "Produced by")))
+            num_directors.append(len(get_team_members(credits_by_teams, "Directed by")))
+            num_crew.append(len(credits_by_teams))
+
+    for movie in movie_dicts:
+        if movie["title"] and int(movie["release_year"]) > 1979 and movie["rating"]:
+            credits_by_teams = movie["credits_by_teams"]        
+            score = 0
+            for name in get_team_members(credits_by_teams, "Writing Credits"):
+                score += allwriters_dict[name]
+            writers_score.append(score)
+            
+            score2 = 0
+            for name in get_team_members(credits_by_teams, "Produced by"):
+                score2 += allproducers_dict[name]
+            producers_score.append(score2)
+                    
+            score3 = 0
+            for name in get_team_members(credits_by_teams, "Directed by"):
+                score3 += alldirectors_dict[name]
+            directors_score.append(score3)
+            
+    for idx, val in enumerate(writers_score):
+        writersproducers_score.append((val+producers_score[idx]))
+
+    ratio = []
+    for idx, val in enumerate(num_animators):
+        if val == 0:
+            ratio.append(0)
+        else:
+            ratio.append(float(num_visual_fx[idx])/val)
+
+    movie_df = pd.DataFrame({'title': title, 'Studio': studio, 'rating': rating, 'num_ratings': num_ratings, 
+                         'gross': gross, 'ratio': ratio, 'writers': writers, 'visual_fx': visual_fx, 'budget': budget,
+                        'animators': animators, 'music': music, 'artists': artists, 'producers': producers,
+                        'directors': directors, 'num_crew': num_crew, 'num_visual_fx': num_visual_fx,
+                        'num_animators': num_animators, 'num_music': num_music, 'num_artists': num_artists, 
+                         'num_producers': num_producers, 'num_directors': num_directors, 'num_writers':num_writers,
+                        'writers_score': writers_score, 'binary_rating': binary_rating,
+                        'directors_score': directors_score, 'producers_score': producers_score,
+                        'writersproducers_score': writersproducers_score})
+                                
+    return movie_df    
+
+
+def trim_degrees(g, degree=1):
+    g2 = g.copy()
+    d = nx.degree(g2)
+    for node, data in g2.nodes(data=True):
+        if d[node] <= degree and data['node_type'] == 'Writer':
+            g2.remove_node(node)
+    return g2
+
+def get_colors(g):
+    color_list =[]
+    for node, data in g.nodes(data=True):
+        if data['node_type'] == 'Movie':
+            color_list.append('c')
+        else:
+            color_list.append('m')
+    return color_list
+
+def make_network_graph(movie_dict, degree_to_trim=1):
+    G=nx.Graph()
+    for title, writers_list in movie_dict.iteritems():
+        G.add_node(title, node_type='Movie')
+        for writer in writers_list:
+            G.add_node(writer, node_type='Writer')
+            G.add_edge(writer, title)
+    G=trim_degrees(G, degree_to_trim)
+    return G

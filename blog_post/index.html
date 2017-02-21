@@ -32,11 +32,11 @@
         <script type="text/javascript" src="movie_crew_study.js"></script>
         
         <h1> Resource Allocation in Animated Movies </h1>
-        <div><p>I don't know how many people out there would agree with me, but I really think that Pixar has got it all figured out. What I mean to say is that Pixar really knows how to please their audiences regardless of their age group. In fact, I sometimes don't even watch the previews for a Pixar movie, because I know that I'm already very likely to see the movie and love it. But why do I like Pixar movies so much? Is it because of the visual effects and beautiful animation? Well, a few other studios have impressive animation as well, so I don't think that's the answer. Perhaps Pixar movies are written by top notch writers: the dialogue is usually very funny and the stories can be quite creative and touching. Do you ever wonder how many people team up to write a movie script? Hayao Miyazaki has written and directed some of the most famous anime films of all time, so I wouldn't be surprised if great stories were actually written by small teams. Or maybe the number of contributing writers has nothing to do with the resulting story. Maybe the story is only impacted by who the writers are. All of these questions (and more) motivated my desire to understand how resource allocation differs among animated movies, and how the distribution of resources has changed over the past few decades. 
+        <div><p>I don't know how many people out there would agree with me, but I really think that Pixar has got it all figured out. What I mean to say is that Pixar really knows how to please their audiences regardless of their age group. In fact, I sometimes don't even watch the previews for a Pixar movie, because I know that I'm already very likely to see the movie and love it. But why do I like Pixar movies so much? Is it because of the visual effects and beautiful animation? Well, a few other studios have impressive animation as well, so I don't think that's the answer. Perhaps Pixar movies are simply well written: the dialogue is usually very funny and the stories can be quite creative and touching. I sometimes wonder how many people are involved in writing a single movie script. I know that Hayao Miyazaki has written and directed some of the most famous anime films of all time. Does this mean that great stories require only one experienced writer? Or maybe the number of contributing writers has nothing to do with the resulting story. Maybe the story is only impacted by who the writers are. All of these questions (and more) motivated my desire to understand how resource allocation differs among animated movies, and how the distribution of resources has changed over the past few decades. 
         </p></div> 
 
         <h2>Methodology</h2>
-        <div><p>To gain insights into the animated movie industry, I used the BeautifulSoup package in Python to scrape movie data off of the internet. I started by scraping wikipedia to get a list of all animated films released since 1980. I found that there has been approximately 2000 animated movies released since 1980. Using this list of movies, I scraped IMDb (the internet movie database) to get data on movie rating, year of release, film gross, production studio, details on the full cast and crew, and more. I found that IMDb only had results for about 1000 movies from my original list of 2000 movies. The following diagram illustrates the steps I took to gather my data:
+        <div><p>To gain insights into the animated movie industry, I used the BeautifulSoup package in Python to scrape movie data off of the internet. I started by scraping wikipedia to get a list of all animated films released since 1980. I found that there's been approximately 2000 animated movies released since 1980. Using this list of movies, I scraped IMDb (the internet movie database) to get data on movie rating, year of release, film gross, production studio, details on the full cast and crew, and more. IMDb only had results for about 1000 movies from my original list of 2000 movies. Most of the missing movies were small, foreign films. The following diagram illustrates the steps I took to gather my data:
         </p></div>
 
         <div>
@@ -48,12 +48,45 @@
         </p></div>
 
         <div><p>
-        To tease out the differences between animation versus visual effects, I took a look at the ratio of visual effects team size to animation team size. The plot focuses on Pixar/Disney and DreamWorks because these studios produced several of the highest grossing films. I was really surprised to see that DreamWorks invests much more in visual effects than in animation, and that the movies with the highest IMDb ratings had a visual effects team that was no greater than twice the size of its animation team.
+        To tease out the differences between animation and visual effects, I took a look at the ratio of visual effects team size to animation team size. The plot focuses on Pixar/Disney and DreamWorks because these studios produced several of the highest grossing films. I was really surprised to see that DreamWorks invests much more in visual effects than in animation, and that the movies with the highest IMDb ratings had a visual effects team that was no greater than twice the size of its animation team.
         </p></div>
 
         <div>
         <img src="rating_vs_ratio2.png" style="width: 80%; height: 80%"/>
         </div>
+
+         <div><p>
+        Next, I created a network graph in order to understand how movies were connected based on the writers involved. The graph below displays Pixar and Disney movies in blue, and the writers for each movie in purple. I removed writers who were only involved in a single movie, so that it would be easier to see which writers were influential across multiple movies. It's interesting to see that the graph has a noticeable division between Disney movies (on top) and Pixar movies (on bottom). Jim Capobianco, Jorgen Klubien, and Joe Ranft are the only writers connected with both Disney and Pixar movies. It's also interesting to see that Toy Story is connected to 4 experienced writers, Toy Story 2 is connected to 3 experienced writers, and Toy Story 3 is connected to only 2 experienced writers. In other words, Pixar appeared to invest more resources in the first Toy Story, and less resources in its sequels. This was also true for the Cars movies and the Monsters Inc movies. 
+        </p></div>
+
+        <div>
+        <img src="pixardisney_network.png" style="width: 75%; height: 75%"/>
+        </div>
+
+         <div><p>
+        The network graph for DreamWorks Animation movie writers is shown below. In comparison to the Pixar/Disney movies, there appears to be less connections among DreamWorks movies, and more segregated clusters of movies. The Shrek and Madagascar movies represent two obvious clusters, in which those writers were less involved in writing movies outside of their clusters. The network graphs provide useful insights that are difficult to discern without visualization. Based on these graphs, I decided to create a scoring metric based on a writer's experience, and the number of experienced writers involved in a movie. I call this metric "writers score" and it is calculated by assigning each writer a value according to how many movies he or she has been involved in, and then summing these values for all writers in a given movie. In the same manner, I also determined the directors score and the producers score for each movie.
+        </p></div>
+
+        <div>
+        <img src="dreamworks_network.png" style="width: 75%; height: 75%"/>
+        </div>
+
+         <div><p>
+        A pearson correlation matrix was created for several of the metrics described above (including 'ratio' which is the size of the visual effects team divided by the size of the animation team). Note that the IMDb rating is correlated with num_ratings (the number of IMDb ratings) and movie gross, which is to be expected. Interestingly, the number of total crew involved and the directors score did not heavily correlate with movie rating. On the other hand, the writers and producers score correlated with IMDb rating, and the ratio metric had an inverse correlation. 
+        </p></div>
+
+        <div>
+        <img src="condensed_corrmatrix.png" style="width: 40%; height: 40%"/>
+        </div>
+
+         <div><p>
+        I combined the writers score and the producers score to show that these metrics may be lumped together. Shown below is the plot comparing Pixar/Disney movies with DreamWorks movies. DreamWorks movies tend to have lower values of the lumped scoring metric compared to Pixar/Disney.
+        </p></div>
+
+        <div>
+        <img src="logscore_plot.png" style="width: 80%; height: 80%"/>
+        </div>
+
     
     </body>
 </html>
