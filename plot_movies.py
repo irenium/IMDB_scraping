@@ -372,7 +372,7 @@ def format_data():
     with open('movies_6feb2017.json','rb') as infile:
         movie_dicts = json.load(infile)    
         
-    title, budget, gross, studio, rating, num_ratings, release_year = [], [], [], [], [], [], []
+    title, budget, gross, studio, rating, num_ratings, release_year, profit = [], [], [], [], [], [], [], []
     visual_fx, animators, music, artists, writers, producers, directors = [],[],[],[],[],[],[]
     num_visual_fx, num_animators, num_music, num_artists, num_writers, num_producers, num_directors, num_crew = [],[],[],[],[],[],[],[]
     writers_score, directors_score, producers_score, binary_rating = [], [], [], []
@@ -495,6 +495,13 @@ def format_data():
         else:
             ratio.append(float(num_visual_fx[idx])/val)
 
+    for idx, val in enumerate(budget):
+        profit.append(gross[idx]-val)
+
+    num_visual = []
+    for idx, val in enumerate(num_animators):
+        num_visual.append(float(val+num_visual_fx[idx]))
+
     movie_df = pd.DataFrame({'title': title, 'Studio': studio, 'rating': rating, 'num_ratings': num_ratings, 
                          'gross': gross, 'ratio': ratio, 'writers': writers, 'visual_fx': visual_fx, 'budget': budget,
                         'animators': animators, 'music': music, 'artists': artists, 'producers': producers,
@@ -503,7 +510,8 @@ def format_data():
                          'num_producers': num_producers, 'num_directors': num_directors, 'num_writers':num_writers,
                         'writers_score': writers_score, 'binary_rating': binary_rating,
                         'directors_score': directors_score, 'producers_score': producers_score,
-                        'writersproducers_score': writersproducers_score})
+                        'writersproducers_score': writersproducers_score, 'profit': profit,
+                        'num_visual': num_visual})
                                 
     return movie_df    
 

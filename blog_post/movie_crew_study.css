@@ -20,6 +20,10 @@ table, td, tr {
   float: left;
 }
 
+.bk-root {
+  position: relative;
+}
+
 /*
  *
  * HOVER

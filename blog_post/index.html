@@ -21,72 +21,186 @@
     </head>
     <body>
         
-        <div>
-        <div class="bk-root">
-            <div class="plotdiv" id="473093b0-c78d-4647-8719-4957ab8ee171"></div>
-        </div>
-        </div>
-        <script type="text/javascript">
-            Bokeh.set_log_level("info");
-        </script>
-        <script type="text/javascript" src="movie_crew_study.js"></script>
+
+
+<article>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+
         
-        <h1> Resource Allocation in Animated Movies </h1>
-        <div><p>I don't know how many people out there would agree with me, but I really think that Pixar has got it all figured out. What I mean to say is that Pixar really knows how to please their audiences regardless of their age group. In fact, I sometimes don't even watch the previews for a Pixar movie, because I know that I'm already very likely to see the movie and love it. But why do I like Pixar movies so much? Is it because of the visual effects and beautiful animation? Well, a few other studios have impressive animation as well, so I don't think that's the answer. Perhaps Pixar movies are simply well written: the dialogue is usually very funny and the stories can be quite creative and touching. I sometimes wonder how many people are involved in writing a single movie script. I know that Hayao Miyazaki has written and directed some of the most famous anime films of all time. Does this mean that great stories require only one experienced writer? Or maybe the number of contributing writers has nothing to do with the resulting story. Maybe the story is only impacted by who the writers are. All of these questions (and more) motivated my desire to understand how resource allocation differs among animated movies, and how the distribution of resources has changed over the past few decades. 
-        </p></div> 
+                <div>
+                <img src="title_bar.png" style="width: 100%; height: 100%"/>
+                </div>
+                
+                <div><p>
+                What goes into the making of a really great animated movie? Here, I consider two things: 
+                <center> Is the movie visually appealing?</center>
+                <center> Does the movie tell a compelling story? </center>
+                </p></div> 
+                <br>
 
-        <h2>Methodology</h2>
-        <div><p>To gain insights into the animated movie industry, I used the BeautifulSoup package in Python to scrape movie data off of the internet. I started by scraping wikipedia to get a list of all animated films released since 1980. I found that there's been approximately 2000 animated movies released since 1980. Using this list of movies, I scraped IMDb (the internet movie database) to get data on movie rating, year of release, film gross, production studio, details on the full cast and crew, and more. IMDb only had results for about 1000 movies from my original list of 2000 movies. Most of the missing movies were small, foreign films. The following diagram illustrates the steps I took to gather my data:
-        </p></div>
+                <div><p>
+                I looked at the composition of movie crews for the highest grossing movies from Pixar/Disney and Dreamworks Animation (the top production studios according to IMDb). First I compared whether visual effects or animation dominated the movie's visual art. Modern animated movies have crews with large teams dedicated to both visual effects and animation, but production studios have a choice regarding which team deserves more resources.
+                </p></div> 
+                <br>
 
-        <div>
-        <img src="python_files.png" style="width: 60%; height: 60%"/>
+                <div>
+                <img src="visual_plot_icons.png" style="width: 100%; height: 100%"/>
+                </div>
+                <br>
+                <br>
+
+                <div><p>
+                Dreamworks invests in visual effects more so than Pixar/Disney. However, it appears that high-rated movies do not require substantially large teams dedicated to visual effects. The top Pixar/Disney movies achieve high IMDb ratings, but their visual effects teams are no more than twice the size of their animation teams. In contrast, Dreamworks movies are typically made with twice as many crew members dedicated to visual effects than to animation.
+                </p></div>
+
+                <div><p>
+                Next I compared who wrote and produced these movies. Since I wanted to measure whether a movie had 'experienced' writers and producers, I added up the total number of movies each writer and producer had ever written or produced (respectively) and summed these values for all writers and producers involved in each movie.  As shown below, Pixar/Disney has more experienced writers and producers than Dreamworks. 
+                </p></div>
+                <br>
+
+                <div>
+                <img src="writers_plot_icons.png" style="width: 100%; height: 100%"/>
+                </div>
+                <br>
+                
+                <div><p>
+                So what factors set apart great movies from bad movies? Well, Dreamworks isn't sacrificing the number of animators involved in their movies by replacing them with visual effects crew members. Rather, Dreamworks just hires larger visual effects teams than Pixar/Disney. I speculate that having a large visual effects team doesn't <i>hurt</i> a movie ... but it doesn't help with ratings either. Therefore, great movies must be driven by experienced writers and producers. It makes sense that experienced writers craft more compelling stories, or that successful writers are in higher demand and, thus, have more experience!
+                </p></div>
+                
+                <div><p>
+                I hope you enjoyed learning about resource allocation in animated movies as much as I did. Read on for more technical details and analysis notes!
+                </p></div>
+                <br>
+                <br>
+
+                <h4> <b>ADDITIONAL TECHNICAL DETAILS, STARTING WITH MY PROJECT MOTIVATION </b></h4>
+                    <div><p>I was really curious to understand why I like Pixar movies so much. I wasn't sure if it's because they look good or because the dialogue is often very funny with creative storylines. I also wanted to understand why I <i>don't</i> really like Dreamworks movies. The internet movie database (IMDb) is full of information on movies and their cast and crew teams, and so I dug into this data to figure out what was going on behind the scenes!
+                    </p></div> 
+
+                    <div><p> Before I start to compare Pixar/Disney and Dreamworks, I want to show how resource allocation in animated movies has evolved over time. The interactive plot below allows you to click through year 1980 to 2016, in order to visualize IMDb rating versus crew size as a function of time. Colors represent specific teams making up the crew, such as the animation team, visual effects team, and writing team. Bubble size indicates relative movie gross.</p></div>
+
+                <br>
+                <h4><b>DYNAMICS OF THE ANIMATED MOVIE INDUSTRY</b></h4>
+                <br>
+                <div>
+                <div class="bk-root">
+                    <div class="plotdiv" id="473093b0-c78d-4647-8719-4957ab8ee171"></div>
+                </div>
+                </div>
+                <script type="text/javascript">
+                    Bokeh.set_log_level("info");
+                </script>
+                <script type="text/javascript" src="movie_crew_study.js"></script>
+
+                <div><p> The most obvious result is the increase in crew size and film gross over the years. Movies that invested in large animation teams (and bigger crews) in the 90s usually made more money and had higher IMDb ratings. Around year 2000, visual effects are introduced in animated movies. Mouse over the bubbles to see that the movie Shrek, which was released in 2001, had a visual effects team that was much larger than its animation team. After year 2000, you can see some competition between the animation team size and the visual effects team size. Some movies invested more crew in animation, while others invested in visual effects. Another interesting find is that film gross and IMDb rating are only correlated with crew size up to a certain point. Take a look at year 2006: the movie Happy Feet had nearly 1000 crew members but it's IMDb rating was around 6.5. In contrast, the movie Cars (also released in 2006) had only 500 crew members but it's IMDb rating was over 7. Although the difference is only 0.5, most high-grossing animated movies score between 6 and 8 (which is a pretty tight range).
+                </p></div>
+
+                <br>
+                <br>
+                <h4><b>VISUAL EFFECTS: QUANTITY DOES NOT IMPLY QUALITY</b></h4>
+                <div><p>
+                To visualize the competition between animation and visual effects, I calculated the ratio of visual effects team size to animation team size. My plots focus on Pixar/Disney and Dreamworks because those studios produced several of the highest grossing films. Furthermore, I wanted to address the basis for my project motivation: 'Pixar versus Dreamworks.' 
+                </p></div>
+
+                <div>
+                <img src="rating_vs_ratio2.png" style="width: 100%; height: 100%"/>
+                </div>
+                <br>
+                <br>
+                <div>
+                <img src="rating_vs_visualfx.png" style="width: 100%; height: 100%"/>
+                </div>
+                <br>
+
+                 <div><p>As summarized earlier, Dreamworks invests more resources in their visual effects teams. Unfortunately, having more crew members dedicated to visual effects does not result in higher IMDb ratings.</p></div>
+                 <br>
+                 <br>
+
+                <h4><b>VISUALIZING CONNECTIONS BETWEEN MOVIES BASED ON THEIR WRITERS</b></h4>
+                <div><p>I created several network graphs to understand how movies were related to each other based on their writers. The graph below displays Pixar and Disney movies in blue, and the movie in purple. To make it easier to identify the most influential writers, I removed writers who were only involved in a single movie.
+                </p></div>
+
+                <div>
+                <img src="pixardisney_network.png" style="width: 100%; height: 100%"/>
+                </div>
+
+                <div><p>It's interesting to see that the graph has a noticeable division between Disney movies (on top) and Pixar movies (on bottom). Jim Capobianco, Jorgen Klubien, and Joe Ranft are the only writers connected to both Disney and Pixar movies. It's also interesting to see that Toy Story is connected to 4 experienced writers, Toy Story 2 is connected to 3 experienced writers, and Toy Story 3 is connected to only 2 experienced writers. In other words, Pixar appeared to invest more resources in the first Toy Story, and less resources in its sequels. This was also true for the Cars movies and the Monsters Inc movies. The network graph for DreamWorks Animation movie writers is shown below. </p></div>
+
+
+                <div>
+                <img src="dreamworks_network.png" style="width: 100%; height: 100%"/>
+                </div>
+
+                <div><p>
+                In comparison to the Pixar/Disney movies, there appears to be less connections among DreamWorks movies, and more segregated clusters of movies. The Shrek and Madagascar movies represent two obvious clusters, where the writers were not very involved in writing movies outside of their clusters.</p></div> 
+                <br>
+                <br>
+
+                <h4><b>SCORING WRITERS, PRODUCERS, AND DIRECTORS</b></h4>
+                <div><p>Based on the network graphs, I developed a scoring metric to reflect a writer's experience. I call this metric "writers score" and it is calculated by assigning each writer a value according to how many movies he or she has ever been involved in, and then summing these values for all writers in a given movie. In the same manner, I also determined the directors score and the producers score for each movie.
+                </p></div>
+
+                <div><p>
+                I used a pearson correlation matrix to quickly judge which features were predictive of IMDb rating, movie gross, and number of IMDb ratings. Pearson's correlation coefficients measure the linear dependency of two variables. In the matrix below, 'ratio' is the size of the visual effects team divided by the size of the animation team. Red corresponds to a positive correlation and blue corresponds to a negative correlation:</p></div>
+
+                <div>
+                <img src="condensed_corrmatrix.png" style="width: 80%; height: 80%"/>
+                </div>
+
+                <div><p>
+                Note that the IMDb rating is correlated with num_ratings (the number of IMDb ratings) and movie gross, which is to be expected. Interestingly, the number of total crew involved did not heavily correlate with movie rating. The director's score also did not strongly correlate with IMDb rating. On the other hand, the writers and producers score correlated with IMDb rating, and the ratio metric had an inverse correlation. 
+                </p></div>            
+                <br>
+                <br>
+
+                <h4><b>QUALITY OVER QUANTITY</b></h4>
+                <div><p>
+                To evaluate story quality, I lumped the writers score and the producers score together (by adding them together). Shown below is the plot comparing IMDb rating for Pixar/Disney movies and DreamWorks movies. As noted earlier, Pixar/Disney has more experienced writers and producers than Dreamworks. </p></div>
+
+                <div>
+                <img src="logscore_plot.png" style="width: 100%; height: 100%"/>
+                </div>
+
+                <div><p>
+                By definition, the writer/producer scores are affected by the number of producers and writers in the movie, so I also looked at team sizes for these features. Pixar/Disney and Dreamworks both had 1 to 13 writers per movie (with some exceptions: Lion King, Aladdin, and Tarzan each had 20+ writers). Within this range, the number of writers per movie had no impact on IMDb rating. Regarding producers, Pixar/Disney had 2 to 6 producers per movie, while Dreamworks had 2 to 11 producers per movie. Thus, the average number of producers per movie was higher for Dreamworks than for Pixar. Regardless, the number of producers did not impact IMDb rating. These results indicate that the writer's experience <i>not</i> the size of the writing team impacts the IMDb rating (and same goes for the producers involved). In other words, writer/producer <i>quality</i> is more important than the number of writers and producers involved.
+                
+                </p></div>
+                <br>
+                <br>
+
+                <h4><b>METHODOLOGY and TOOLBOX</b></h4>
+                <div><p>I used the BeautifulSoup package in Python to scrape movie data off of the internet. I started by scraping wikipedia to get a list of all animated films released since 1980. I found approximately 2000 animated movies released since 1980. Using this list of movies, I scraped IMDb (the internet movie database) to get data on movie rating, year of release, film gross, production studio, details on the full cast and crew, and more. IMDb only had results for about 1000 movies from my original list of 2000 movies. Most of the missing movies were small, foreign films. The following diagram illustrates the steps I took to gather my data:
+                </p></div>
+
+                <div>
+                <img src="python_files.png" style="width: 80%; height: 80%"/>
+                </div>
+                <br>
+
+                <div><p>
+                <center>Python - scripting language</center>
+                <center>Pandas - data wrangling</center>
+                <center>Beautiful Soup - web scraping</center>
+                <center>Bokeh - interactive plotting</center>
+                <center>NetworkX - network graphs</center>
+                <center>Inkscape and GIMP - movie icon editing</center>
+                </p></div>
+
+                <div><p>
+                <br>
+                <br>
+                The github repo for this project can be found here: <a href="https://github.com/irenium/IMDB_scraping"> github.com/irenium/IMDB_scraping </a>
+                <br>
+                <br>
+                </p></div>
+
+
+            </div>
         </div>
-
-        <h2>Key Results</h2>
-        <div><p> The interactive plot illustrates how the animated movie industry has changed since 1980. Colors represent specific teams making up the crew, such as the animation team, visual effects team, and writing team. The bubble size indicates relative movie gross. The most obvious result is that crew size and film gross both increased over the years. Movies that invested in large animation teams (and bigger crews) in the 90s tended to make more money and have higher IMDb ratings. Around year 2000, visual effects teams become popular. The movie Shrek was released in 2001, and had a visual effects team that was much larger than its animation team. One of the things that I find most interesting about the plot is the size variation in animation and visual effects teams since 2000. Some movies have more people on their animation team, and others have invested more in their visual effects team. It's difficult to discern from the plot which of these two teams is more important. Another interesting finding is that film gross and IMDb rating are only correlated with crew size up to a certain point. Take a look at year 2006: the movie Happy Feet had nearly 1000 crew members but it's IMDb rating was around 6.5. In contrast, the movie Cars (also released in 2006) had only 500 crew members but it's IMDb rating was over 7. Although the difference is only 0.5, most high-grossing animated movies score between 6 and 8 (pretty tight range).
-        </p></div>
-
-        <div><p>
-        To tease out the differences between animation and visual effects, I took a look at the ratio of visual effects team size to animation team size. The plot focuses on Pixar/Disney and DreamWorks because these studios produced several of the highest grossing films. I was really surprised to see that DreamWorks invests much more in visual effects than in animation, and that the movies with the highest IMDb ratings had a visual effects team that was no greater than twice the size of its animation team.
-        </p></div>
-
-        <div>
-        <img src="rating_vs_ratio2.png" style="width: 80%; height: 80%"/>
-        </div>
-
-         <div><p>
-        Next, I created a network graph in order to understand how movies were connected based on the writers involved. The graph below displays Pixar and Disney movies in blue, and the writers for each movie in purple. I removed writers who were only involved in a single movie, so that it would be easier to see which writers were influential across multiple movies. It's interesting to see that the graph has a noticeable division between Disney movies (on top) and Pixar movies (on bottom). Jim Capobianco, Jorgen Klubien, and Joe Ranft are the only writers connected with both Disney and Pixar movies. It's also interesting to see that Toy Story is connected to 4 experienced writers, Toy Story 2 is connected to 3 experienced writers, and Toy Story 3 is connected to only 2 experienced writers. In other words, Pixar appeared to invest more resources in the first Toy Story, and less resources in its sequels. This was also true for the Cars movies and the Monsters Inc movies. 
-        </p></div>
-
-        <div>
-        <img src="pixardisney_network.png" style="width: 75%; height: 75%"/>
-        </div>
-
-         <div><p>
-        The network graph for DreamWorks Animation movie writers is shown below. In comparison to the Pixar/Disney movies, there appears to be less connections among DreamWorks movies, and more segregated clusters of movies. The Shrek and Madagascar movies represent two obvious clusters, in which those writers were less involved in writing movies outside of their clusters. The network graphs provide useful insights that are difficult to discern without visualization. Based on these graphs, I decided to create a scoring metric based on a writer's experience, and the number of experienced writers involved in a movie. I call this metric "writers score" and it is calculated by assigning each writer a value according to how many movies he or she has been involved in, and then summing these values for all writers in a given movie. In the same manner, I also determined the directors score and the producers score for each movie.
-        </p></div>
-
-        <div>
-        <img src="dreamworks_network.png" style="width: 75%; height: 75%"/>
-        </div>
-
-         <div><p>
-        A pearson correlation matrix was created for several of the metrics described above (including 'ratio' which is the size of the visual effects team divided by the size of the animation team). Note that the IMDb rating is correlated with num_ratings (the number of IMDb ratings) and movie gross, which is to be expected. Interestingly, the number of total crew involved and the directors score did not heavily correlate with movie rating. On the other hand, the writers and producers score correlated with IMDb rating, and the ratio metric had an inverse correlation. 
-        </p></div>
-
-        <div>
-        <img src="condensed_corrmatrix.png" style="width: 40%; height: 40%"/>
-        </div>
-
-         <div><p>
-        I combined the writers score and the producers score to show that these metrics may be lumped together. Shown below is the plot comparing Pixar/Disney movies with DreamWorks movies. DreamWorks movies tend to have lower values of the lumped scoring metric compared to Pixar/Disney.
-        </p></div>
-
-        <div>
-        <img src="logscore_plot.png" style="width: 80%; height: 80%"/>
-        </div>
-
+    </div>
+</article>
     
     </body>
 </html>
