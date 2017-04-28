@@ -1,6 +1,7 @@
 import csv
 import jinja2
 import json
+import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
 import pandas as pd
@@ -508,7 +509,7 @@ def format_data():
                         'directors': directors, 'num_crew': num_crew, 'num_visual_fx': num_visual_fx,
                         'num_animators': num_animators, 'num_music': num_music, 'num_artists': num_artists, 
                          'num_producers': num_producers, 'num_directors': num_directors, 'num_writers':num_writers,
-                        'writers_score': writers_score, 'binary_rating': binary_rating,
+                        'writers_score': writers_score, 'binary_rating': binary_rating, 'year': release_year,
                         'directors_score': directors_score, 'producers_score': producers_score,
                         'writersproducers_score': writersproducers_score, 'profit': profit,
                         'num_visual': num_visual})
@@ -542,3 +543,43 @@ def make_network_graph(movie_dict, degree_to_trim=1):
             G.add_edge(writer, title)
     G=trim_degrees(G, degree_to_trim)
     return G
+
+def make_digraphs(name_list, group_list):
+
+    temp_dict = {}
+    for name in name_list:
+        temp_dict[name] = []
+    for idx, name in enumerate(name_list):    
+        temp_dict[name].append(group_list[idx])
+
+    tuple_list = []
+    for key, val in temp_dict.items():
+        for num in range(len(val)-1):
+        #    tuple_list.append(tuple(val[num:num+2]))
+            temp1 = val[num:num+2][0]+'1'
+            temp2 = val[num:num+2][1]+'2' 
+            tuple_list.append(tuple([temp1, temp2]))
+
+    tuple_dict = {}
+    for pair in tuple_list:
+        tuple_dict[pair] = 0
+    for pair in tuple_list:
+        tuple_dict[pair] += 1
+    print tuple_dict
+    G=nx.MultiDiGraph()
+
+    for key, val in tuple_dict.iteritems():
+        if key[0] == key[1] or (key[0][:-1:] == key[1][:-1:]) or val < 1:
+            pass
+        else:
+            G.add_edge(key[0], key[1], weight=val)
+
+    #pos=nx.circular_layout(G, dim=2, scale=2)
+    pos = nx.spring_layout(G, k=0.1)
+    plt.figure(3,figsize=(12,8)) 
+    colors = [extra['weight']*4 for (node, neighbor, extra) in G.edges(data=True)]
+    nx.draw(G, pos, node_size=2000, node_color = 'w', edge_color=colors, 
+        edge_cmap=plt.cm.Blues, width=4, alpha=1, font_size=9, 
+        with_labels=True, arrows=False)
+
+    return
